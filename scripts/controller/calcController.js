@@ -55,7 +55,7 @@ class CalcController {
 
     addOperation(value){
 
-        console.log('A', (isNaN(this.getLastOperation())));
+        console.log('A', isNaN(this.getLastOperation()));
 
         if(isNaN(this.getLastOperation())){
             //String
@@ -73,7 +73,7 @@ class CalcController {
             let newValue = this.getLastOperation().toString() + value.toString();
             this.setLastOperation(parseInt(newValue));
         }
-        this._operation.push(value);
+        
         console.log(this._operation);
     }
 
