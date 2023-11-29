@@ -12,8 +12,8 @@ class CalcController {
     }
 
     initialize(){     
+        this.setLastNumberToDisplay();
         this.setDisplayDateTime();
-
         let interval = setInterval(()=>{
             this.setDisplayDateTime();
          }, 1000);
@@ -31,10 +31,12 @@ class CalcController {
 
     clearAll(){
         this._operation = [];
+        this.setLastNumberToDisplay();        
     }
 
     clearEntry(){
         this._operation.pop();        
+        this.setLastNumberToDisplay();
     }
 
     setError(){
@@ -56,9 +58,7 @@ class CalcController {
     pushOperation(value){
 
         this._operation.push(value);
-
         if (this._operation.length > 3) {
-
             this.calc();           
         }    
     }
@@ -66,32 +66,52 @@ class CalcController {
     calc(){
         let last = this._operation.pop();
         let result = eval(this._operation.join(""));
-        this._operation =[result, last];
+
+        if (last =='%'){
+            result /= 100;
+            this._operation =[result];
+        } else {            
+            this._operation =[result, last];
+        }
+        
+        this.setLastNumberToDisplay();
+    }
+
+    setLastNumberToDisplay(){
+        let lastNumber;
+        for(let i=this._operation.length -1; i >= 0; i-- ){
+            if(!this.isOperator(this._operation[i])) {
+                lastNumber = this._operation[i];
+                break;
+            }
+        }
+
+        if (!lastNumber) lastNumber = 0;
+        this.displayCalc = lastNumber;
     }
 
     addOperation(value){
-
         if(isNaN(this.getLastOperation())){
             //String
             if(this.isOperator(value)){
                 //Troca Operador
                 this.setLastOperation(value);
-                } else if (isNaN(value)){
-                    
+                } else if (isNaN(value)){                    
                     //outra coisa
                     pushOperation('Outra coisa', value);
-
                 } else {
                 this.pushOperation(value);
+                this.setLastNumberToDisplay();
                 }
         } else {
-            //Number
-            
+            //Number            
             if (this.isOperator(value)){
                 this.pushOperation(value);
             } else {
                 let newValue = this.getLastOperation().toString() + value.toString();
                 this.setLastOperation(parseInt(newValue));
+
+                this.setLastNumberToDisplay();
             }            
         }    
     }
